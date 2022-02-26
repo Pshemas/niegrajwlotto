@@ -34,7 +34,7 @@ def main():
         print(f"Ilość trafień: {trafione}")
         proby += 1
         print(f"to proba nr {proby}")
-    print(f"Probowales {proby} zanim trafiles 6tke.")
+    print(f"Probowales {proby} razy zanim trafiles 6tke.")
 
 
 if __name__ == "__main__":
