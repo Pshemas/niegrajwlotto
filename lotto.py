@@ -4,7 +4,7 @@ import random
 
 class Lotto_game:
     """
-    Creates empty coupon and draws 6 random numbers.
+    Draws 6 random numbers and marks them in playslip.
     Provides methods to mark those on the coupon and count hits.
     """
 
