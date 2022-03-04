@@ -5,7 +5,7 @@ import random
 class Lotto_game:
     """
     Draws 6 random numbers and marks them in playslip.
-    Provides methods to mark those on the coupon and count hits.
+    Provides methods to mark numbers on the coupon, count hits and draw again (reinit).
     """
 
     def __init__(self):
