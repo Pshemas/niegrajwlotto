@@ -79,7 +79,7 @@ def main():
         game.draw_again()
 
     spent = mystats.calculate_balance()
-    print(f"There were {mystats.attempts} attempts before 6 hits were scored")
+    print(f"There were {mystats.attempts} attempts to score 6 hits.")
     print(f"You've spent {spent} PLN to get there.")
 
 
