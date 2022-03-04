@@ -1,85 +1,86 @@
-""" szybka rozgrzewka zaproponowana przez tworcow pycamp-u"""
+""" a short warmup task proposed by Pycamp organizers"""
 import random
 
 
-class Losowanie_lotto:
+class Lotto_game:
     """
-    Tworzy kupon lotto jako listę długości 49
-    i zaznacza w nim 6 losowych liczb.
+    Creates empty coupon and draws 6 random numbers.
+    Provides methods to mark those on the coupon and count hits.
     """
 
     def __init__(self):
-        self.losowanie = [0] * 49
-        self.wylosowane = random.sample(range(1, 50), 6)
-        self.oznacz_wylosowane()
+        self.playslip = [0] * 49
+        self.drawn_numbers = random.sample(range(1, 50), 6)
+        self.mark_drawn()
 
-    def oznacz_wylosowane(self):
+    def mark_drawn(self):
         """
-        wstawia 1 w liscie losowanie w miejsca wyznaczone przez wylosowane liczby
+        puts 1 in self.playslip cells pointed by drawn_numbers.
         """
-        for liczba in self.wylosowane:
-            self.losowanie[liczba - 1] = 1
+        for liczba in self.drawn_numbers:
+            self.playslip[liczba - 1] = 1
 
-    def ile_trafionych(self, skreslone: list) -> int:
+    def check_hits(self, chosen_numbers: list) -> int:
         """
-        sprawdza ilosc trafionych liczb.
+        calculates number of hits returned as int.
         """
-        trafienia = 0
-        for liczba in skreslone:
-            trafienia += self.losowanie[liczba - 1]
-        return trafienia
+        hits = 0
+        for liczba in chosen_numbers:
+            hits += self.playslip[liczba - 1]
+        return hits
+
+    def draw_again(self):
+        """
+        Clears playslip and redraws the numbers.
+        """
+        self.__init__()
 
 
-def losuj_szostke(skreslone: list):
+class Lotto_stats:
     """
-    przeprowadza losowanie tak dlugo, az trafi szostke.
-    Przyjmuje listę z 6 wybranymi liczbami jako argument.
-    Zwraca ilosc losowan (int) i podsumowaniem trafien{dict).
+    Used to record attempts, hits and calculate prize / spent balance
     """
 
-    proby = 1
-    wyniki = {3: 0, 4: 0, 5: 0, 6: 0}
+    def __init__(self) -> None:
+        self.attempts = 0
+        self.summary = {3: 0, 4: 0, 5: 0, 6: 0}
+        self.singlecoupon_cost = 3
+        self.prize3 = 24
+        self.prize4 = 100
+        self.prize5 = 24
+        self.prize6 = 2000000
 
-    while True:
-        losowanie = Losowanie_lotto()
-        losowanie.oznacz_wylosowane()
-        trafione = losowanie.ile_trafionych(skreslone)
-        if trafione > 2:
-            wyniki[trafione] += 1
-
-        if trafione == 6:
-            break
-
-        proby += 1
-
-    return proby, wyniki
-
-
-def policz_koszt_kuponow(ilosckuponow: int) -> float:
-    """
-    Liczy ile kosztowały kupony lotto
-    """
-    cena_kuponu = 3.0
-    return cena_kuponu * ilosckuponow
+    def calculate_balance(self) -> int:
+        """
+        Used to calculate how much has been spent / won.
+        Returns result as int
+        """
+        total_spent = self.attempts * self.singlecoupon_cost
+        prizes = (
+            self.summary[3] * self.prize3
+            + self.summary[4] * self.prize4
+            + self.summary[5] * self.prize5
+            + self.summary[6] * self.prize6
+        )
+        balance = total_spent - prizes
+        return balance
 
 
 def main():
-    mojeliczby = [2, 8, 9, 10, 12, 45]
-    iledoszostki = losuj_szostke(mojeliczby)
-    wydano = policz_koszt_kuponow(iledoszostki[0])
-    print(
-        f"Szóstka trafiona za {iledoszostki[0]} podejściem. \n Wydano na kupony {wydano} PLN."
-    )
-    print(
-        f"Przed szostką było {iledoszostki[1][3]} trójek, {iledoszostki[1][4]} czwórek, {iledoszostki[1][5]} piątek."
-    )
-    bilans = (
-        wydano
-        - iledoszostki[1][5] * 5300
-        - iledoszostki[1][4] * 100
-        - iledoszostki[1][3] * 24
-    )
-    print(f"Biorąc pod uwagę wypłacane średnie wydałeś {bilans}.")
+    mypicks = [2, 8, 9, 10, 12, 45]
+    mystats = Lotto_stats()
+    game = Lotto_game()
+
+    while mystats.summary[6] == 0:
+        mystats.attempts += 1
+        hits = game.check_hits(mypicks)
+        if hits > 2:
+            mystats.summary[hits] += 1
+        game.draw_again()
+
+    spent = mystats.calculate_balance()
+    print(f"There were {mystats.attempts} attempts before 6 hits were scored")
+    print(f"You've spent {spent} PLN to get there.")
 
 
 if __name__ == "__main__":
